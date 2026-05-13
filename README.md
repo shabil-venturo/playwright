@@ -20,7 +20,7 @@ Filter ini bekerja bersamaan dengan filter Status (passed/failed/skipped) dan fi
 ## Instalasi
 
 ```bash
-npm install -D @venturo/playwright
+npm install -D venturo-playwright
 npx playwright install
 ```
 
@@ -31,7 +31,7 @@ npx playwright install
 Tambahkan tag `@positive` atau `@negative` pada setiap test menggunakan opsi `tag`:
 
 ```typescript
-import { test, expect } from '@venturo/playwright';
+import { test, expect } from 'venturo-playwright';
 
 test.describe('Alur Login', () => {
 
@@ -105,6 +105,10 @@ npx playwright test --grep @negative
 ## Kompatibilitas
 
 Package ini berbasis Playwright versi `1.61.0`. Semua fitur Playwright asli tetap tersedia dan tidak ada yang dihapus.
+
+## npm
+
+[https://www.npmjs.com/package/venturo-playwright](https://www.npmjs.com/package/venturo-playwright)
 
 ---
 
