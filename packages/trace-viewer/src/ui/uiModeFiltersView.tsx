@@ -27,13 +27,15 @@ export const FiltersView: React.FC<{
   setFilterText: (text: string) => void;
   statusFilters: Map<string, boolean>;
   setStatusFilters: (filters: Map<string, boolean>) => void;
+  tagFilters: Map<string, boolean>;
+  setTagFilters: (filters: Map<string, boolean>) => void;
   projectFilters: Map<string, boolean>;
   setProjectFilters: (filters: Map<string, boolean>) => void;
   onlyChanged: boolean;
   setOnlyChanged: (value: boolean) => void;
   testModel: TeleSuiteUpdaterTestModel | undefined,
   runTests: () => void;
-}> = ({ filterText, setFilterText, statusFilters, setStatusFilters, projectFilters, setProjectFilters, onlyChanged, setOnlyChanged, testModel, runTests }) => {
+}> = ({ filterText, setFilterText, statusFilters, setStatusFilters, tagFilters, setTagFilters, projectFilters, setProjectFilters, onlyChanged, setOnlyChanged, testModel, runTests }) => {
   const [expanded, setExpanded] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
   React.useEffect(() => {
@@ -41,7 +43,9 @@ export const FiltersView: React.FC<{
   }, []);
 
   const statusLine = [...statusFilters.entries()].filter(([_, v]) => v).map(([s]) => s).join(' ') || 'all';
+  const tagLine = [...tagFilters.entries()].filter(([_, v]) => v).map(([t]) => t.replace('@', '')).join(' ');
   const projectsLine = [...projectFilters.entries()].filter(([_, v]) => v).map(([p]) => p).join(' ') || 'all';
+  const summaryTitle = 'Status: ' + statusLine + '\nProjects: ' + projectsLine + (tagLine ? '\nCase: ' + tagLine : '') + (onlyChanged ? '\nOnly changed' : '');
   return <div className='filters'>
     <Expandable
       expanded={expanded}
@@ -55,9 +59,10 @@ export const FiltersView: React.FC<{
             runTests();
         }} />}>
     </Expandable>
-    <div className='filter-summary' title={'Status: ' + statusLine + '\nProjects: ' + projectsLine + (onlyChanged ? '\nOnly changed' : '')} onClick={() => setExpanded(!expanded)}>
+    <div className='filter-summary' title={summaryTitle} onClick={() => setExpanded(!expanded)}>
       <span className='filter-label'>Status:</span> {statusLine}
       <span className='filter-label'>Projects:</span> {projectsLine}
+      {tagLine && <><span className='filter-label'>Case:</span> {tagLine}</>}
       {onlyChanged && <><span className='filter-label'>Only changed</span></>}
     </div>
     {expanded && <>
@@ -93,6 +98,20 @@ export const FiltersView: React.FC<{
             </div>;
           })}
         </div>
+      </div>
+      <div className='filter-list' role='list' data-testid='tag-filters' style={{ marginLeft: 14 }}>
+        {[...tagFilters.entries()].map(([tag, value]) => {
+          return <div className='filter-entry' key={tag} role='listitem'>
+            <label>
+              <input type='checkbox' checked={value} onChange={() => {
+                const copy = new Map(tagFilters);
+                copy.set(tag, !copy.get(tag));
+                setTagFilters(copy);
+              }}/>
+              <div>{tag.replace('@', '')} case</div>
+            </label>
+          </div>;
+        })}
       </div>
       <div className='filter-entry' style={{ marginLeft: 24 }}>
         <label>

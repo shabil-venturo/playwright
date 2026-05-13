@@ -84,6 +84,10 @@ export const UIModeView: React.FC<{}> = ({
     ['failed', false],
     ['skipped', false],
   ]));
+  const [tagFilters, setTagFilters] = React.useState<Map<string, boolean>>(new Map([
+    ['@positive', false],
+    ['@negative', false],
+  ]));
   const [projectFilters, setProjectFilters] = React.useState<Map<string, boolean>>(new Map());
   const [testModel, setTestModel] = React.useState<TeleSuiteUpdaterTestModel>();
   const [progress, setProgress] = React.useState<TeleSuiteUpdaterProgress & { total: number } | undefined>();
@@ -251,12 +255,12 @@ export const UIModeView: React.FC<{}> = ({
     if (!testModel)
       return { testTree: new TestTree('', new TeleSuite('', 'root'), [], projectFilters, queryParams.pathSeparator, mergeFiles) };
     const testTree = new TestTree('', testModel.rootSuite, testModel.loadErrors, projectFilters, queryParams.pathSeparator, mergeFiles);
-    testTree.filterTree(filterText, statusFilters, isRunningTest ? runningState?.testIds : undefined);
+    testTree.filterTree(filterText, statusFilters, tagFilters, isRunningTest ? runningState?.testIds : undefined);
     testTree.sortAndPropagateStatus();
     testTree.shortenRoot();
     testTree.flattenForSingleProject();
     return { testTree };
-  }, [filterText, testModel, statusFilters, projectFilters, runningState, isRunningTest, mergeFiles]);
+  }, [filterText, testModel, statusFilters, tagFilters, projectFilters, runningState, isRunningTest, mergeFiles]);
 
   const runTests = React.useCallback((mode: 'queue-if-busy' | 'bounce-if-busy', filter: { testIds: Iterable<string>, locations: Iterable<string> }) => {
     if (!testServerConnection || !testModel)
@@ -478,6 +482,8 @@ export const UIModeView: React.FC<{}> = ({
           setFilterText={setFilterText}
           statusFilters={statusFilters}
           setStatusFilters={setStatusFilters}
+          tagFilters={tagFilters}
+          setTagFilters={setTagFilters}
           projectFilters={projectFilters}
           setProjectFilters={setProjectFilters}
           onlyChanged={onlyChanged}

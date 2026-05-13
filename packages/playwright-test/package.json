@@ -1,17 +1,17 @@
 {
-  "name": "@playwright/test",
-  "version": "1.61.0-next",
+  "name": "@venturo/playwright",
+  "version": "1.0.0",
   "description": "A high-level API to automate web browsers",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microsoft/playwright.git"
+    "url": "git+https://github.com/venturo/playwright.git"
   },
   "homepage": "https://playwright.dev",
   "engines": {
     "node": ">=18"
   },
   "author": {
-    "name": "Microsoft Corporation"
+    "name": "Venturo"
   },
   "license": "Apache-2.0",
   "exports": {
