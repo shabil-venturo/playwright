@@ -75,7 +75,7 @@ const PartitionedWorkbench: React.FunctionComponent<WorkbenchProps & { partition
   const { partition, model, showSourcesFirst, rootDir, fallbackLocation, isLive, hideTimeline, status, annotations, inert, onOpenExternally, revealSource, testRunMetadata } = props;
 
   // UI settings, shared for all models.
-  const [selectedNavigatorTab, setSelectedNavigatorTab] = useSetting<string>('navigatorTab',  'actions');
+  const [selectedNavigatorTab, setSelectedNavigatorTab] = useSetting<string>('navigatorTab', 'steps');
   const [selectedPropertiesTab, setSelectedPropertiesTab] = useSetting<string>('propertiesTab', showSourcesFirst ? 'source' : 'call');
   const [sidebarLocation, setSidebarLocation] = useSetting<'bottom' | 'right'>('propertiesSidebarLocation', 'bottom');
   const [actionsFilter] = useSetting<ActionGroup[]>('actionsFilter', []);
@@ -351,6 +351,12 @@ const PartitionedWorkbench: React.FunctionComponent<WorkbenchProps & { partition
       />
     </div>
   };
+  const stepsTab: TabbedPaneTabModel | undefined = annotations?.length ? {
+    id: 'steps',
+    title: 'Scenario',
+    component: <AnnotationPlanView annotations={annotations} filterText='' />,
+  } : undefined;
+
   const metadataTab: TabbedPaneTabModel = {
     id: 'metadata',
     title: 'Metadata',
@@ -389,7 +395,7 @@ const PartitionedWorkbench: React.FunctionComponent<WorkbenchProps & { partition
           playback={playback} />}
         sidebar={
           <TabbedPane
-            tabs={[actionsTab, metadataTab]}
+            tabs={[...(stepsTab ? [stepsTab] : []), actionsTab, metadataTab]}
             rightToolbar={[actionsFilterWithCount]}
             selectedTab={selectedNavigatorTab}
             setSelectedTab={setSelectedNavigatorTab}
@@ -460,3 +466,75 @@ function traceUriToPartition(traceUri: string | undefined): string {
   url.searchParams.delete('timestamp');
   return url.toString();
 }
+
+const ANNOTATION_TYPES = ['objective', 'step', 'expected'] as const;
+type KnownType = typeof ANNOTATION_TYPES[number];
+
+const TYPE_ICON: Record<KnownType, string> = {
+  objective: '💡',
+  step: '',
+  expected: '✓',
+};
+
+const AnnotationPlanView: React.FC<{ annotations: TestAnnotation[]; filterText: string }> = ({ annotations }) => {
+  const [search, setSearch] = React.useState('');
+
+  const stepNums = React.useMemo(() => {
+    const m = new Map<TestAnnotation, number>();
+    let n = 0;
+    for (const a of annotations) if (a.type === 'step') m.set(a, ++n);
+    return m;
+  }, [annotations]);
+
+  const visible = search
+    ? annotations.filter(a => a.description?.toLowerCase().includes(search.toLowerCase()))
+    : annotations;
+
+  const visibleSteps = visible.filter(a => a.type === 'step');
+  const visibleExpected = visible.filter(a => a.type === 'expected');
+  const totalSteps = annotations.filter(a => a.type === 'step').length;
+
+  return <div className='annotations-tab'>
+    <div className='workbench-action-filter'>
+      <input
+        type='search'
+        placeholder='Search steps…'
+        aria-label='Search steps'
+        spellCheck={false}
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+      />
+    </div>
+
+    <div className='scenario-body'>
+      {visibleSteps.length > 0 && <>
+        <div className='scenario-step-header'>
+          <span>{visibleSteps.length === totalSteps ? `${totalSteps} steps` : `${visibleSteps.length} / ${totalSteps} steps`}</span>
+          <div className='scenario-step-divider' />
+        </div>
+        <div className='scenario-steps'>
+          {visibleSteps.map((ann, i) => (
+            <div className='annotation-item' key={i}>
+              <div className='step-marker'>
+                <span className='step-number'>{stepNums.get(ann)}</span>
+                {i < visibleSteps.length - 1 && <div className='step-connector' />}
+              </div>
+              <span className='annotation-description'>{ann.description}</span>
+            </div>
+          ))}
+        </div>
+      </>}
+
+      {visibleExpected.length > 0 && <div className='scenario-expected'>
+        {visibleExpected.map((ann, i) => (
+          <div className='annotation-item type-expected' key={i}>
+            <span className='annotation-badge type-expected'>✓</span>
+            <span className='annotation-description'>{ann.description}</span>
+          </div>
+        ))}
+      </div>}
+
+      {visible.length === 0 && <div className='scenario-empty'>No steps match.</div>}
+    </div>
+  </div>;
+};

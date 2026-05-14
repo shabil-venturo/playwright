@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = require('playwright/test');
+module.exports = require('venturo-playwright-runner/test');

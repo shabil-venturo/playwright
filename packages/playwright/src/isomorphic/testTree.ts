@@ -201,7 +201,7 @@ export class TestTree {
         return false;
       if (filtersTagsActive) {
         const testTags = testCase.tags.map(t => t.toLowerCase());
-        const hasMatchingTag = [...tagFilters.entries()].some(([tag, enabled]) => enabled && testTags.includes(tag));
+        const hasMatchingTag = [...tagFilters.entries()].some(([tag, enabled]) => enabled && testTags.includes(tag.toLowerCase()));
         if (!hasMatchingTag && !testCase.tests.some(t => runningTestIds?.has(t.id)))
           return false;
       }
@@ -275,6 +275,25 @@ export class TestTree {
 
   sortAndPropagateStatus() {
     sortAndPropagateStatus(this.rootItem);
+  }
+
+  flattenFileNodes() {
+    const visit = (treeItem: TreeItem) => {
+      treeItem.children.forEach(visit);
+      const newChildren: TreeItem[] = [];
+      for (const child of treeItem.children) {
+        if (child.kind === 'group' && child.subKind === 'file') {
+          for (const grandchild of child.children) {
+            grandchild.parent = treeItem;
+            newChildren.push(grandchild);
+          }
+        } else {
+          newChildren.push(child);
+        }
+      }
+      treeItem.children = newChildren;
+    };
+    visit(this.rootItem);
   }
 
   flattenForSingleProject() {

@@ -108,7 +108,7 @@ export const FiltersView: React.FC<{
                 copy.set(tag, !copy.get(tag));
                 setTagFilters(copy);
               }}/>
-              <div>{tag.replace('@', '')} case</div>
+              <div>{tag.replace('@', '')}</div>
             </label>
           </div>;
         })}

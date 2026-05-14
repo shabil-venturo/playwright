@@ -85,8 +85,9 @@ export const UIModeView: React.FC<{}> = ({
     ['skipped', false],
   ]));
   const [tagFilters, setTagFilters] = React.useState<Map<string, boolean>>(new Map([
-    ['@positive', false],
-    ['@negative', false],
+    ['@Key', false],
+    ['@Positive', false],
+    ['@Edge Case', false],
   ]));
   const [projectFilters, setProjectFilters] = React.useState<Map<string, boolean>>(new Map());
   const [testModel, setTestModel] = React.useState<TeleSuiteUpdaterTestModel>();
@@ -258,6 +259,7 @@ export const UIModeView: React.FC<{}> = ({
     testTree.filterTree(filterText, statusFilters, tagFilters, isRunningTest ? runningState?.testIds : undefined);
     testTree.sortAndPropagateStatus();
     testTree.shortenRoot();
+    testTree.flattenFileNodes();
     testTree.flattenForSingleProject();
     return { testTree };
   }, [filterText, testModel, statusFilters, tagFilters, projectFilters, runningState, isRunningTest, mergeFiles]);

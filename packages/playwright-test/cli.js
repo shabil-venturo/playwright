@@ -15,5 +15,5 @@
  * limitations under the License.
  */
 
-const { program } = require('playwright/lib/program');
+const { program } = require('venturo-playwright-runner/lib/program');
 program.parse(process.argv);
