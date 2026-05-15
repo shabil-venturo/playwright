@@ -85,8 +85,8 @@ export const UIModeView: React.FC<{}> = ({
     ['skipped', false],
   ]));
   const [tagFilters, setTagFilters] = React.useState<Map<string, boolean>>(new Map([
-    ['@Key', false],
-    ['@Positive', false],
+    ['@Key Case', false],
+    ['@Negative Case', false],
     ['@Edge Case', false],
   ]));
   const [projectFilters, setProjectFilters] = React.useState<Map<string, boolean>>(new Map());

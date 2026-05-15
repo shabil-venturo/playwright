@@ -1,6 +1,6 @@
 {
   "name": "venturo-playwright",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A high-level API to automate web browsers",
   "repository": {
     "type": "git",
@@ -30,6 +30,6 @@
   },
   "scripts": {},
   "dependencies": {
-    "venturo-playwright-runner": "1.0.11"
+    "venturo-playwright-runner": "1.0.12"
   }
 }
