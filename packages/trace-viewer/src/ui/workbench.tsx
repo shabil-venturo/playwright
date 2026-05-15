@@ -479,18 +479,7 @@ const TYPE_ICON: Record<KnownType, string> = {
 const AnnotationPlanView: React.FC<{ annotations: TestAnnotation[]; filterText: string }> = ({ annotations }) => {
   const [search, setSearch] = React.useState('');
 
-  const notionRaw = annotations.find(a => a.type === 'notion')?.description ?? '';
-  const notionUrl = notionRaw.includes('|||') ? notionRaw.split('|||')[0] : notionRaw;
-  const notionTitle = React.useMemo(() => {
-    if (!notionUrl) return '';
-    if (notionRaw.includes('|||')) return notionRaw.split('|||')[1] || '';
-    try {
-      const slug = new URL(notionUrl).pathname.split('/').filter(Boolean).pop() ?? '';
-      return slug.replace(/-/g, ' ').trim();
-    } catch {
-      return '';
-    }
-  }, [notionUrl, notionRaw]);
+  const notionUrl = annotations.find(a => a.type === 'notion')?.description ?? '';
 
   const stepNums = React.useMemo(() => {
     const m = new Map<TestAnnotation, number>();
@@ -510,7 +499,7 @@ const AnnotationPlanView: React.FC<{ annotations: TestAnnotation[]; filterText: 
   return <div className='annotations-tab'>
     {notionUrl && <a className='scenario-notion-link' href={notionUrl} target='_blank' rel='noopener noreferrer'>
       <span className='codicon codicon-markdown' />
-      <span>{notionTitle || 'Markdown Automation'}</span>
+      <span>Markdown Automation</span>
       <span className='codicon codicon-link-external' style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.6 }} />
     </a>}
     <div className='workbench-action-filter'>
