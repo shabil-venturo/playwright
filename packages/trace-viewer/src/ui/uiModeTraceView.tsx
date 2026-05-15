@@ -88,6 +88,11 @@ export const TraceView: React.FC<{
     };
   }, [outputDir, item, setModel, counter, setCounter, pathSeparator]);
 
+  const annotations = React.useMemo(() => {
+    const result = item.testCase?.results[0];
+    return result?.annotations?.length ? result.annotations : (item.testCase?.annotations ?? []);
+  }, [item.testCase]);
+
   return <Workbench
     model={model?.model}
     key='workbench'
@@ -96,7 +101,7 @@ export const TraceView: React.FC<{
     fallbackLocation={item.testFile}
     isLive={model?.isLive}
     status={item.treeItem?.status}
-    annotations={item.testCase?.annotations ?? []}
+    annotations={annotations}
     onOpenExternally={onOpenExternally}
     revealSource={revealSource}
   />;
