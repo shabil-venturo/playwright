@@ -479,6 +479,8 @@ const TYPE_ICON: Record<KnownType, string> = {
 const AnnotationPlanView: React.FC<{ annotations: TestAnnotation[]; filterText: string }> = ({ annotations }) => {
   const [search, setSearch] = React.useState('');
 
+  const notionUrl = annotations.find(a => a.type === 'notion')?.description;
+
   const stepNums = React.useMemo(() => {
     const m = new Map<TestAnnotation, number>();
     let n = 0;
@@ -487,14 +489,18 @@ const AnnotationPlanView: React.FC<{ annotations: TestAnnotation[]; filterText: 
   }, [annotations]);
 
   const visible = search
-    ? annotations.filter(a => a.description?.toLowerCase().includes(search.toLowerCase()))
-    : annotations;
+    ? annotations.filter(a => a.type !== 'notion' && a.description?.toLowerCase().includes(search.toLowerCase()))
+    : annotations.filter(a => a.type !== 'notion');
 
   const visibleSteps = visible.filter(a => a.type === 'step');
   const visibleExpected = visible.filter(a => a.type === 'expected');
   const totalSteps = annotations.filter(a => a.type === 'step').length;
 
   return <div className='annotations-tab'>
+    {notionUrl && <a className='scenario-notion-link' href={notionUrl} target='_blank' rel='noopener noreferrer'>
+      <span className='codicon codicon-link-external' />
+      <span>Notion Document</span>
+    </a>}
     <div className='workbench-action-filter'>
       <input
         type='search'
